@@ -2,16 +2,16 @@
 #'
 #' @param miniconda_repo  Repositories for miniconda. Default is \code{https://repo.anaconda.com/miniconda}
 #' @param force Whether to force a new environment to be created. If \code{TRUE}, the existing environment will be recreated. Default is \code{FALSE}
-#' @param version A character vector specifying the version of the environment (default is "3.8-1").
+#' @param version A character vector specifying the version of the environment (default is "3.11-1").
 #' @inheritParams check_Python
 #' @details This function prepares the SCP Python environment by checking if conda is installed, creating a new conda environment if needed, installing the required packages, and setting up the Python environment for use with SCP.
 #' In order to create the environment, this function requires the path to the conda binary. If \code{conda} is set to \code{"auto"}, it will attempt to automatically find the conda binary.
 #' If a conda environment with the specified name already exists and \code{force} is set to \code{FALSE}, the function will use the existing environment. If \code{force} set to \code{TRUE}, the existing environment will be recreated. Note that recreating the environment will remove any existing data in the environment.
-#' The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter. The default is \code{3.8-1}.
+#' The function also checks if the package versions in the environment meet the requirements specified by the \code{version} parameter. The default is \code{3.11-1}.
 #'
 #' @export
 PrepareEnv <- function(conda = "auto", miniconda_repo = "https://repo.anaconda.com/miniconda",
-                       envname = NULL, version = "3.8-1", force = FALSE, ...) {
+                       envname = NULL, version = "3.11-1", force = FALSE, ...) {
   envname <- get_envname(envname)
 
   requirements <- Env_requirements(version = version)
@@ -87,8 +87,8 @@ PrepareEnv <- function(conda = "auto", miniconda_repo = "https://repo.anaconda.c
       conda <- reticulate:::miniconda_conda(miniconda_path)
       envs_dir <- reticulate:::conda_info(conda = conda)$envs_dirs[1]
     }
-    if (python_version < numeric_version("3.7.0") || python_version >= numeric_version("3.10.0")) {
-      stop("SCP currently only support python version 3.7-3.9!")
+    if (python_version < numeric_version("3.9.0") || python_version >= numeric_version("3.12.0")) {
+      stop("SCP currently only support python version 3.9-3.11!")
     }
     python_path <- reticulate::conda_create(conda = conda, envname = envname, python_version = python_version, packages = "pytables")
     env_path <- paste0(envs_dir, "/", envname)
@@ -132,7 +132,7 @@ PrepareEnv <- function(conda = "auto", miniconda_repo = "https://repo.anaconda.c
 #'
 #' This function provides the SCP python environment requirements for a specific version.
 #'
-#' @param version A character vector specifying the version of the environment (default is "3.8-1").
+#' @param version A character vector specifying the version of the environment (default is "3.11-1").
 #' @return A list of requirements for the specified version.
 #' @details The function returns a list of requirements including the required Python version
 #'          and a list of packages with their corresponding versions.
@@ -141,55 +141,9 @@ PrepareEnv <- function(conda = "auto", miniconda_repo = "https://repo.anaconda.c
 #' Env_requirements("3.8-1")
 #'
 #' @export
-Env_requirements <- function(version = "3.8-1") {
-  version <- match.arg(version, choices = c("3.8-1", "3.8-2", "3.9-1", "3.10-1", "3.11-1"))
+Env_requirements <- function(version = "3.11-1") {
+  version <- match.arg(version, choices = c("3.9-1", "3.10-1", "3.11-1"))
   requirements <- switch(version,
-    "3.8-1" = list(
-      python = "3.8",
-      packages = c(
-        "leidenalg" = "leidenalg==0.10.1",
-        "matplotlib" = "matplotlib==3.6.3",
-        "numba" = "numba==0.55.2",
-        "numpy" = "numpy==1.21.6",
-        "palantir" = "palantir==1.0.1",
-        "pandas" = "pandas==1.3.5",
-        "python-igraph" = "python-igraph==0.10.2",
-        "scanpy" = "scanpy==1.9.5",
-        "scikit-learn" = "scikit-learn==1.3.2",
-        "scipy" = "scipy==1.10.1",
-        "scvelo" = "scvelo==0.2.5",
-        "wot" = "wot==1.0.8.post2",
-        "trimap" = "trimap==1.1.4",
-        "pacmap" = "pacmap==0.7.0",
-        "phate" = "phate==1.0.11",
-        "bbknn" = "bbknn==1.6.0",
-        "scanorama" = "scanorama==1.7.4",
-        "scvi-tools" = "scvi-tools==0.20.3"
-      )
-    ),
-    "3.8-2" = list(
-      python = "3.8",
-      packages = c(
-        "leidenalg" = "leidenalg==0.10.1",
-        "matplotlib" = "matplotlib==3.7.3",
-        "numba" = "numba==0.58.1",
-        "numpy" = "numpy==1.24.4",
-        "palantir" = "palantir==1.3.0",
-        "pandas" = "pandas==1.5.3",
-        "python-igraph" = "python-igraph==0.10.8",
-        "scanpy" = "scanpy==1.9.5",
-        "scikit-learn" = "scikit-learn==1.3.2",
-        "scipy" = "scipy==1.10.1",
-        "scvelo" = "scvelo==0.2.5",
-        "wot" = "wot==1.0.8.post2",
-        "trimap" = "trimap==1.1.4",
-        "pacmap" = "pacmap==0.7.0",
-        "phate" = "phate==1.0.11",
-        "bbknn" = "bbknn==1.6.0",
-        "scanorama" = "scanorama==1.7.4",
-        "scvi-tools" = "scvi-tools==0.20.3"
-      )
-    ),
     "3.9-1" = list(
       python = "3.9",
       packages = c(
@@ -237,7 +191,7 @@ Env_requirements <- function(version = "3.8-1") {
       )
     ),
     "3.11-1" = list(
-      python = "3.10",
+      python = "3.11",
       packages = c(
         "leidenalg" = "leidenalg==0.10.1",
         "matplotlib" = "matplotlib==3.8.0",
